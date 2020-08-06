@@ -1,3 +1,5 @@
-__author__ = 'waqas'
+from __future__ import absolute_import
 
-from onesignal_client import OneSignal
+__author__ = "waqas"
+
+from .onesignal_client import OneSignal

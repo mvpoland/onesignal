@@ -3,13 +3,14 @@ Author: Zohaib Ijaz <mzohaib.qc@gmail.com> and Waqas Younas <waqas.younas@gmail.
 """
 import datetime
 import hashlib
-from onesignal import OneSignal 
+
 import pytest
 
+from onesignal import OneSignal
 
-APP_ID = '3f373607-3ebb-413c-90fb-becfdd3bb2c5'
-AUTH_TOKEN = 'YjcyZTcxNGUtYjRhZi00N2U4LWEwZjktNTZkOGVmNzM0ZWRh'
-BASE_URL = 'http://onesignal.com/api/v1'
+APP_ID = "3f373607-3ebb-413c-90fb-becfdd3bb2c5"
+AUTH_TOKEN = "YjcyZTcxNGUtYjRhZi00N2U4LWEwZjktNTZkOGVmNzM0ZWRh"
+BASE_URL = "http://onesignal.com/api/v1"
 
 
 @pytest.fixture()
@@ -36,10 +37,11 @@ def app(one_signal_obj):
 def player(one_signal_obj):
     dt_now = datetime.datetime.now
     dt_format = "%d%m%Y%H%M%S%f"
-    random_str = hashlib.sha256(dt_now().strftime(dt_format)).hexdigest()
-    device_type = 0 # denotes iOS
+    random_str = hashlib.sha256(
+        dt_now().strftime(dt_format).encode("utf-8")
+    ).hexdigest()
+    device_type = 0  # denotes iOS
     params = dict(
-        identifier=random_str, language='en', device_os='7.0',
-        device_model='iPhone'
+        identifier=random_str, language="en", device_os="7.0", device_model="iPhone"
     )
     return one_signal_obj.create_player(device_type, **params).json()

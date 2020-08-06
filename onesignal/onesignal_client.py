@@ -25,17 +25,19 @@ The 'App REST API Key' is under the "Application Settings" page under the "API K
 ---------------------------------------------------------------------------------------------------
 
 """
-import re
 import json
+import re
+
 import requests
+from builtins import object
+from builtins import range
+from past.builtins import basestring
 
-
-BASE_URL = 'https://onesignal.com/api/'
+BASE_URL = "https://onesignal.com/api/"
 
 
 class OneSignal(object):
-
-    def __init__(self, user_auth_key, app_id=None, version='v1'):
+    def __init__(self, user_auth_key, app_id=None, version="v1"):
         """
         Initializes the OneSignalSDK object.
         :param user_auth_key: This can be found by logging-in to http://onesignal.com and
@@ -47,7 +49,7 @@ class OneSignal(object):
         """
         self.app_id = app_id
         self.user_auth_key = user_auth_key
-        assert isinstance(version, basestring), 'version is not valid'
+        assert isinstance(version, basestring), "version is not valid"
         self.api_url = BASE_URL + version
 
     def get_headers(self):
@@ -57,7 +59,7 @@ class OneSignal(object):
         """
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "Basic %s" % self.user_auth_key
+            "Authorization": "Basic %s" % self.user_auth_key,
         }
         return headers
 
@@ -101,14 +103,18 @@ class OneSignal(object):
                 }]
             }
         """
-        assert self.app_id, 'app_id must have a valid value'
-        assert app_auth_key, 'app_auth_key must have a valid value'
-        url = self.api_url + "/players?app_id=%s&limit=%s&offset=%s" % (self.app_id, limit, offset)
+        assert self.app_id, "app_id must have a valid value"
+        assert app_auth_key, "app_auth_key must have a valid value"
+        url = self.api_url + "/players?app_id=%s&limit=%s&offset=%s" % (
+            self.app_id,
+            limit,
+            offset,
+        )
         headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic %s' % app_auth_key
+            "Content-Type": "application/json",
+            "Authorization": "Basic %s" % app_auth_key,
         }
-        return send_request(url, method='GET', headers=headers)
+        return send_request(url, method="GET", headers=headers)
 
     def get_player(self, player_id):
         """
@@ -145,9 +151,9 @@ class OneSignal(object):
             last_active = response['last_active']
             tags = response['tags]
         """
-        assert player_id, 'player_id is not valid'
+        assert player_id, "player_id is not valid"
         url = self.api_url + "/players/" + player_id
-        return send_request(url, method='GET')
+        return send_request(url, method="GET")
 
     def create_player(self, device_type, app_id=None, **kwargs):
         """
@@ -182,15 +188,15 @@ class OneSignal(object):
             tags = response['tags]
         """
         app_id = app_id if app_id else self.app_id
-        assert app_id, 'app_id must have a valid value'
+        assert app_id, "app_id must have a valid value"
         assert device_type in range(0, 9)
         url = self.api_url + "/players"
-        kwargs['app_id'] = app_id
-        kwargs['device_type'] = device_type
+        kwargs["app_id"] = app_id
+        kwargs["device_type"] = device_type
         data = json.dumps(kwargs)
-        return send_request(url, method='POST', headers={
-            'Content-Type': 'application/json'
-        }, data=data)
+        return send_request(
+            url, method="POST", headers={"Content-Type": "application/json"}, data=data
+        )
 
     def edit_player(self, player_id, **kwargs):
         """
@@ -205,12 +211,12 @@ class OneSignal(object):
                 "success": true
             }
         """
-        assert player_id, 'player is is not valid'
+        assert player_id, "player is is not valid"
         url = self.api_url + "/players/" + player_id
         data = json.dumps(kwargs)
-        return send_request(url, method='PUT', headers={
-            'Content-Type': 'application/json'
-        }, data=data)
+        return send_request(
+            url, method="PUT", headers={"Content-Type": "application/json"}, data=data
+        )
 
     def player_on_session(self, player_id, **kwargs):
         """
@@ -226,9 +232,9 @@ class OneSignal(object):
         assert player_id
         url = self.api_url + "/players/" + player_id + "/on_session"
         data = json.dumps(kwargs)
-        return send_request(url, method='POST', headers={
-            'Content-Type': 'application/json'
-        }, data=data)
+        return send_request(
+            url, method="POST", headers={"Content-Type": "application/json"}, data=data
+        )
 
     def player_on_purchase(self, player_id, **kwargs):
         """
@@ -246,9 +252,9 @@ class OneSignal(object):
         assert player_id
         url = self.api_url + "/players/" + player_id + "/on_purchase"
         data = json.dumps(kwargs)
-        return send_request(url, method='POST', headers={
-            'Content-Type': 'application/json'
-        }, data=data)
+        return send_request(
+            url, method="POST", headers={"Content-Type": "application/json"}, data=data
+        )
 
     def player_on_focus(self, player_id, **kwargs):
         """
@@ -266,9 +272,9 @@ class OneSignal(object):
         assert player_id
         url = self.api_url + "/players/" + player_id + "/on_focus"
         data = json.dumps(kwargs)
-        return send_request(url, method='POST', headers={
-            'Content-Type': 'application/json'
-        }, data=data)
+        return send_request(
+            url, method="POST", headers={"Content-Type": "application/json"}, data=data
+        )
 
     def create_app(self, app_name, **kwargs):
         """
@@ -367,13 +373,15 @@ class OneSignal(object):
             }
         """
         url = self.api_url + "/apps"
-        kwargs['name'] = app_name
+        kwargs["name"] = app_name
         data = json.dumps(kwargs)
-        response = send_request(url, method='POST', headers=self.get_headers(), data=data)
+        response = send_request(
+            url, method="POST", headers=self.get_headers(), data=data
+        )
         if response.ok and not self.app_id:
             # If app creation was successful then update app id for this client
             resp = response.json()
-            self.app_id = resp.get('id')
+            self.app_id = resp.get("id")
         return response
 
     def update_app(self, **kwargs):
@@ -414,10 +422,10 @@ class OneSignal(object):
                 basic_auth_key: "NGEwMGZmMjItY2NkNy0xMWUzLTk5ZDUtMDAwYzI5NDBlNjJj"
             }
         """
-        assert self.app_id, 'app_id must have a valid value'
+        assert self.app_id, "app_id must have a valid value"
         url = self.api_url + "/apps/" + self.app_id
         data = json.dumps(kwargs)
-        return send_request(url, method='PUT', headers=self.get_headers(), data=data)
+        return send_request(url, method="PUT", headers=self.get_headers(), data=data)
 
     def get_apps(self):
         """
@@ -458,7 +466,7 @@ class OneSignal(object):
             }]
         """
         url = self.api_url + "/apps"
-        return send_request(url, method='GET', headers=self.get_headers())
+        return send_request(url, method="GET", headers=self.get_headers())
 
     def get_app(self, app_id=None):
         """
@@ -499,7 +507,7 @@ class OneSignal(object):
         """
         app_id = app_id if app_id else self.app_id
         url = self.api_url + "/apps/" + app_id
-        return send_request(url, method='GET', headers=self.get_headers())
+        return send_request(url, method="GET", headers=self.get_headers())
 
     def export_players_to_csv(self, app_auth_key, app_id=None):
         """
@@ -517,16 +525,24 @@ class OneSignal(object):
             }
         """
         app_id = app_id if app_id else self.app_id
-        assert app_id, 'app_id can not be empty'
+        assert app_id, "app_id can not be empty"
         url = self.api_url + "/players/csv_export?app_id=" + app_id
         headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic %s' % app_auth_key
+            "Content-Type": "application/json",
+            "Authorization": "Basic %s" % app_auth_key,
         }
-        return send_request(url, headers=headers, method='POST')
+        return send_request(url, headers=headers, method="POST")
 
-    def create_notification(self, contents, heading='', url='',
-                            included_segments=('All',), app_id=None, player_ids=None, **kwargs):
+    def create_notification(
+        self,
+        contents,
+        heading="",
+        url="",
+        included_segments=("All",),
+        app_id=None,
+        player_ids=None,
+        **kwargs
+    ):
         """
         Creates a notification by sending a notification to https://onesignal.com/api/v1/notifications
         :param heading: push notification heading / title
@@ -549,25 +565,24 @@ class OneSignal(object):
         """
         app_id = app_id if app_id else self.app_id
         assert app_id and contents
-        data = {
-            "contents": {"en": contents},
-            "app_id": app_id
-        }
+        data = {"contents": {"en": contents}, "app_id": app_id}
         if url and is_valid_url(url):
-            data['url'] = url
+            data["url"] = url
         if heading:
-            data['headings'] = {"en": heading}
+            data["headings"] = {"en": heading}
 
         if player_ids and isinstance(player_ids, (list, tuple)):
-            data['include_player_ids'] = player_ids
+            data["include_player_ids"] = player_ids
         elif isinstance(included_segments, (list, tuple)) and len(included_segments):
-            data['included_segments'] = included_segments
+            data["included_segments"] = included_segments
 
         data.update(kwargs)
 
         api_url = self.api_url + "/notifications"
         data = json.dumps(data)
-        return send_request(api_url, method='POST', headers=self.get_headers(), data=data)
+        return send_request(
+            api_url, method="POST", headers=self.get_headers(), data=data
+        )
 
     def get_notification(self, app_id, notification_id, app_auth_key):
         """
@@ -605,11 +620,11 @@ class OneSignal(object):
 
         assert app_id and notification_id and app_auth_key
         headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Basic %s' % app_auth_key
+            "Content-Type": "application/json",
+            "Authorization": "Basic %s" % app_auth_key,
         }
-        url = self.api_url + ('/notifications/%s?app_id=%s' % (notification_id, app_id))
-        return send_request(url, method='GET', headers=headers)
+        url = self.api_url + ("/notifications/%s?app_id=%s" % (notification_id, app_id))
+        return send_request(url, method="GET", headers=headers)
 
     def delete_notification(self, notification_id):
         """
@@ -625,8 +640,10 @@ class OneSignal(object):
             }
         """
         assert notification_id
-        url = self.api_url + ('/notifications/%s?app_id=%s' % (notification_id, self.app_id))
-        return send_request(url, method='DELETE', headers=self.get_headers())
+        url = self.api_url + (
+            "/notifications/%s?app_id=%s" % (notification_id, self.app_id)
+        )
+        return send_request(url, method="DELETE", headers=self.get_headers())
 
 
 def is_valid_url(url):
@@ -634,16 +651,18 @@ def is_valid_url(url):
     Reference: https://github.com/django/django-old/blob/1.3.X/django/core/validators.py#L42
     """
     regex = re.compile(
-        r'^https?://'  # http:// or https://
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain...
-        r'localhost|'  # localhost...
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
-        r'(?::\d+)?'  # optional port
-        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+        r"^https?://"  # http:// or https://
+        r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|"  # domain...
+        r"localhost|"  # localhost...
+        r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
+        r"(?::\d+)?"  # optional port
+        r"(?:/?|[/?]\S+)$",
+        re.IGNORECASE,
+    )
     return url is not None and regex.search(url)
 
 
-def send_request(url, method='GET', data=None, headers=None):
+def send_request(url, method="GET", data=None, headers=None):
     """
     Sends a request using `requests` module.
     :param url: URL to send request to
@@ -653,7 +672,7 @@ def send_request(url, method='GET', data=None, headers=None):
     :return: Returns a HTTP Response object
     """
     assert url and method
-    assert method in ['GET', 'PUT', 'DELETE', 'POST']
+    assert method in ["GET", "PUT", "DELETE", "POST"]
     method = getattr(requests, method.lower())
     response = method(url=url, data=data, headers=headers)
     return response
