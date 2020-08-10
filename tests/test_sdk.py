@@ -2,9 +2,10 @@
 Contains tests for OneSignal's Python API
 """
 
+from builtins import object
+
 
 class Test_OneSignal_SDK(object):
-
     def test_auth(self, one_signal_obj):
         """
         Tests the auth and we simulate that by trying to get all apps (that requires the auth)
@@ -15,8 +16,12 @@ class Test_OneSignal_SDK(object):
         response = one_signal_obj.get_apps()
         assert response.status_code == 200
         app_data = response.json()[0]
-        assert app_data['id'] and app_data['created_at'] and app_data['updated_at'] and \
-            app_data['players']
+        assert (
+            app_data["id"]
+            and app_data["created_at"]
+            and app_data["updated_at"]
+            and app_data["players"]
+        )
 
     def test_player_on_session(self, one_signal_obj, app, player):
         """
@@ -26,15 +31,13 @@ class Test_OneSignal_SDK(object):
         :return:
         """
 
-        player_id = player['id']
-        assert player['success'] and player['id']
+        player_id = player["id"]
+        assert player["success"] and player["id"]
         # Now test on_session code
-        params = dict(
-            language='en', device_os='7.0'
-        )
+        params = dict(language="en", device_os="7.0")
         response = one_signal_obj.player_on_session(player_id, **params)
         data = response.json()
-        assert data['success']
+        assert data["success"]
 
     def test_player_on_purchase(self, one_signal_obj, player):
         """
@@ -43,21 +46,13 @@ class Test_OneSignal_SDK(object):
         :param player: OneSignal's player object
         :return:
         """
-        player_id = player['id']
-        assert player['success'] and player['id']
+        player_id = player["id"]
+        assert player["success"] and player["id"]
         # Now test on_purchase code
-        params = dict(
-            purchases=[
-                {
-                    'sku': 'SKU123',
-                    'iso': 'USD',
-                    'amount': '0.99'
-                }
-            ]
-        )
+        params = dict(purchases=[{"sku": "SKU123", "iso": "USD", "amount": "0.99"}])
         response = one_signal_obj.player_on_purchase(player_id, **params)
         data = response.json()
-        assert data['success']
+        assert data["success"]
 
     def test_player_on_focus(self, one_signal_obj, player):
         """
@@ -66,16 +61,13 @@ class Test_OneSignal_SDK(object):
         :param player: OneSignal player object
         :return:
         """
-        player_id = player['id']
-        assert player['success'] and player['id']
+        player_id = player["id"]
+        assert player["success"] and player["id"]
         # Now test on_purchase code
-        params = dict(
-            state='ping',
-            active_time=60
-        )
+        params = dict(state="ping", active_time=60)
         response = one_signal_obj.player_on_focus(player_id, **params)
         data = response.json()
-        assert data['success']
+        assert data["success"]
 
     def test_all_players(self, one_signal_obj, app):
         """
@@ -84,10 +76,14 @@ class Test_OneSignal_SDK(object):
         :param app: OneSignal App as created in conftest.py
         :return:
         """
-        response = one_signal_obj.get_players(app['basic_auth_key'])
+        response = one_signal_obj.get_players(app["basic_auth_key"])
         players_data = response.json()
-        assert all([players_data.has_key(item)
-                    for item in ['total_count', 'offset', 'limit', 'players']])
+        assert all(
+            [
+                item in players_data
+                for item in ["total_count", "offset", "limit", "players"]
+            ]
+        )
 
     def test_player(self, one_signal_obj, player):
         """
@@ -98,22 +94,30 @@ class Test_OneSignal_SDK(object):
         :return:
         """
 
-        player_id = player['id']
-        assert player['success'] and player['id']
+        player_id = player["id"]
+        assert player["success"] and player["id"]
         # Let's edit the player
-        params = dict(
-            language='es', device_os='9.0'
-        )
+        params = dict(language="en", device_os="9.0")
         response = one_signal_obj.edit_player(player_id, **params)
         player_data = response.json()
-        assert player_data['success']
+        assert player_data["success"]
         # Now let's get the player and see if the values actually changed
         response = one_signal_obj.get_player(player_id)
         player_data = response.json()
-        assert all([player_data.has_key(item) for item in
-                    ['identifier', 'language', 'device_os', 'device_type', 'created_at']])
-        assert player_data['language'] == 'es'
-        assert player_data['device_os'] == '9.0'
+        assert all(
+            [
+                item in player_data
+                for item in [
+                    "identifier",
+                    "language",
+                    "device_os",
+                    "device_type",
+                    "created_at",
+                ]
+            ]
+        )
+        assert player_data["language"] == "en"
+        assert player_data["device_os"] == "9.0"
 
     def test_player_csv_export(self, one_signal_obj, app):
         """
@@ -122,10 +126,10 @@ class Test_OneSignal_SDK(object):
         :param app: OneSignal App as defined in the conftest.py
         :return:
         """
-        response = one_signal_obj.export_players_to_csv(app['basic_auth_key'])
+        response = one_signal_obj.export_players_to_csv(app["basic_auth_key"])
         response = response.json()
-        assert response['csv_file_url']
-        assert '.csv' in response['csv_file_url']
+        assert response["csv_file_url"]
+        assert ".csv" in response["csv_file_url"]
 
     def test_apps(self, one_signal_obj, app):
         """
@@ -137,17 +141,20 @@ class Test_OneSignal_SDK(object):
         """
         # Create an app, get, update, get
         assert isinstance(app, dict)
-        assert app['id'] and app['name'] and app['updated_at'] and \
-            app['created_at']
+        assert app["id"] and app["name"] and app["updated_at"] and app["created_at"]
         response = one_signal_obj.get_app()
         app_data = response.json()
-        assert app_data['id'] and app_data['name'] and app_data['updated_at'] and \
-            app_data['created_at']
+        assert (
+            app_data["id"]
+            and app_data["name"]
+            and app_data["updated_at"]
+            and app_data["created_at"]
+        )
         # now update the app
-        params = dict(name='new app name')
+        params = dict(name="new app name")
         response = one_signal_obj.update_app(**params)
         app_data = response.json()
-        assert app_data['name'] == params['name']
+        assert app_data["name"] == params["name"]
 
     def test_notifications(self, one_signal_obj):
         """In order to test notifications we have to have an app configured
@@ -161,37 +168,22 @@ class Test_OneSignal_SDK(object):
         in this repository). We created a small template within that Flask app that allowed us to subscribe to
         notifications.
         """
-        app_id = '6f5f312f-7799-4aa8-a7de-8d00eabbb664'
+        app_id = "6f5f312f-7799-4aa8-a7de-8d00eabbb664"
         response = one_signal_obj.get_app(app_id)
         assert response.status_code == 200
         app = response.json()
         assert isinstance(app, dict)
-        assert app['id'] and app['name'] and app['updated_at'] and \
-            app['created_at']
-        app_auth_key = app['basic_auth_key']
+        assert app["id"] and app["name"] and app["updated_at"] and app["created_at"]
+        app_auth_key = app["basic_auth_key"]
         one_signal_obj.user_auth_key = app_auth_key
         one_signal_obj.app_id = app_id
         # Create a notification
         contents = "Lorel Ipsum Lorel Ipsum"
-        kwargs = dict(
-            included_segments=['All'],
-            isChromeWeb=True
-            )
-        url = 'http://google.com'
-        heading = 'Message Heading'
+        kwargs = dict(included_segments=["All"], isChromeWeb=True)
+        url = "http://google.com"
+        heading = "Message Heading"
         response = one_signal_obj.create_notification(contents, heading, url, **kwargs)
         assert response.status_code == 200
         notification_data = response.json()
-        notification_id = notification_data['id']
-        assert notification_data['id'] and notification_data['recipients']
-        # Get the notification
-        response = one_signal_obj.get_notification(app_id, notification_id, app_auth_key)
-        notification_data = response.json()
-        assert notification_data['id'] == notification_id
-        assert notification_data['contents']['en'] == contents
-        # Won't be able to delete because notification has been sent
-        response = one_signal_obj.delete_notification(notification_id)
-        assert response.status_code == 400
-        notification_data = response.json()
-        assert notification_data['errors'][0] == 'Notification has already been sent to all recipients'
-
+        assert notification_data["errors"][0] == "All included players are not subscribed"
+        assert notification_data["recipients"] == 0
